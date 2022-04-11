@@ -10,6 +10,12 @@
 %
 % from platformio.project.helpers import load_project_ide_data
 %
+% def _prepare_define(define):
+%   define = define.replace("-D", "")
+%   s = re.sub(r"(-D)?([\"\(\)\ #])", r"\\\2", define)
+%   return s
+% end
+%
 % def _normalize_path(path):
 %   if project_dir in path:
 %     path = path.replace(project_dir, "${CMAKE_CURRENT_LIST_DIR}")
@@ -79,7 +85,7 @@ set(CMAKE_CXX_STANDARD {{ cxx_stds[-1] }})
 
 if (CMAKE_BUILD_TYPE MATCHES "{{ env_name }}")
 % for define in defines:
-    add_definitions(-D{{!re.sub(r"([\"\(\)\ #])", r"\\\1", define)}})
+    add_definitions (-D{{ _prepare_define(define) }})
 % end
 
 % for include in filter_includes(includes):
@@ -103,7 +109,7 @@ endif()
 % for env, data in ide_data.items():
 if (CMAKE_BUILD_TYPE MATCHES "{{ env }}")
 %   for define in data["defines"]:
-    add_definitions(-D{{!re.sub(r"([\"\(\)\ #])", r"\\\1", define)}})
+    add_definitions (-D{{ _prepare_define(define) }})
 %   end
 
 %   for include in filter_includes(data["includes"]):
